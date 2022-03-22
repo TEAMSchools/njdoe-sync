@@ -10,6 +10,8 @@ from collections import deque
 import njdoe
 from google.cloud import storage
 
+from datarobot.utilities import email
+
 GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
 ADP_MODULE_PATH = os.getenv("ADP_MODULE_PATH")
 ADP_CLIENT_ID = os.getenv("ADP_CLIENT_ID")
@@ -106,6 +108,10 @@ def main():
             print(f"{worker_id}\n\tERROR")
             print(xc)
             print(traceback.format_exc())
+            email_subject = f"NJDOE Extract Error - {worker_id}"
+            email_body = f"{xc}\n\n{traceback.format_exc()}"
+            email.send_email(subject=email_subject, body=email_body)
+
         finally:
             time.sleep(WAIT_TIME)
 
@@ -116,3 +122,6 @@ if __name__ == "__main__":
     except Exception as xc:
         print(xc)
         print(traceback.format_exc())
+        email_subject = "NJDOE Extract Error"
+        email_body = f"{xc}\n\n{traceback.format_exc()}"
+        email.send_email(subject=email_subject, body=email_body)
