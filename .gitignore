@@ -134,3 +134,4 @@ dev/
 archive/
 .bash_secrets
 .pdm.toml
+background-checks.sh
