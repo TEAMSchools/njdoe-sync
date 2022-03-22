@@ -8,12 +8,9 @@ import traceback
 from collections import deque
 
 import njdoe
-from dotenv import load_dotenv
 from google.cloud import storage
 
 from datarobot.utilities import email
-
-load_dotenv()
 
 GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
 ADP_MODULE_PATH = os.getenv("ADP_MODULE_PATH")
@@ -29,7 +26,7 @@ NOW_TIMESTAMP = datetime.datetime.now()
 NOW_DATE_ISO = NOW_TIMESTAMP.date().isoformat()
 
 sys.path.insert(0, ADP_MODULE_PATH)
-import adp
+import adp  # noqa: E402
 
 
 def main():
