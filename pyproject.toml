@@ -29,5 +29,5 @@ build-backend = "pdm.pep517.api"
 
 [tool.pdm.scripts]
 _.env_file = ".env"
-bg-check = { call = "njdoe_sync.background_checks:main" }
+bg-check = { call = "njdoe_sync.background_checks:main", site_packages = true }
 post_lock = { shell = "pdm export -f requirements > requirements.txt" }
