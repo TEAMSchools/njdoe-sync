@@ -1,4 +1,3 @@
-import datetime
 import json
 import os
 import pathlib
@@ -10,40 +9,33 @@ from collections import deque
 import njdoe
 from google.cloud import storage
 
+sys.path.insert(0, os.getenv("ADP_MODULE_PATH"))
+import adp  # trunk-ignore(flake8/E402)
 from datarobot.utilities import email
-
-GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
-ADP_MODULE_PATH = os.getenv("ADP_MODULE_PATH")
-ADP_CLIENT_ID = os.getenv("ADP_CLIENT_ID")
-ADP_CLIENT_SECRET = os.getenv("ADP_CLIENT_SECRET")
-ADP_CERT_FILEPATH = os.getenv("ADP_CERT_FILEPATH")
-ADP_KEY_FILEPATH = os.getenv("ADP_KEY_FILEPATH")
-TARGET_STAFF_FILE = os.getenv("TARGET_STAFF_FILE")
-WAIT_TIME = int(os.getenv("WAIT_TIME"))
-
-PROJECT_PATH = pathlib.Path(__file__).parent.absolute()
-NOW_TIMESTAMP = datetime.datetime.now()
-NOW_DATE_ISO = NOW_TIMESTAMP.date().isoformat()
-
-sys.path.insert(0, ADP_MODULE_PATH)
-import adp  # noqa: E402
 
 
 def main():
-    with open(TARGET_STAFF_FILE) as f:
+    wait_time = int(os.getenv("WAIT_TIME"))
+
+    script_dir = pathlib.Path(__file__).parent.absolute()
+
+    with open(os.getenv("TARGET_STAFF_FILE")) as f:
         staff = json.load(f)
 
-    file_dir = PROJECT_PATH / "data" / "background_check"
+    file_dir = script_dir / "data" / "background_check"
     if not file_dir.exists():
         file_dir.mkdir(parents=True)
 
     adp_client = adp.authorize(
-        ADP_CLIENT_ID, ADP_CLIENT_SECRET, ADP_CERT_FILEPATH, ADP_KEY_FILEPATH
+        os.getenv("ADP_CLIENT_ID"),
+        os.getenv("ADP_CLIENT_SECRET"),
+        os.getenv("ADP_CERT_FILEPATH"),
+        os.getenv("ADP_KEY_FILEPATH"),
     )
     adp_client.headers["Accept"] = "application/json;masked=false"
 
     gcs_client = storage.Client()
-    gcs_bucket = gcs_client.bucket(GCS_BUCKET_NAME)
+    gcs_bucket = gcs_client.bucket(os.getenv("GCS_BUCKET_NAME"))
 
     print("Downloading worker data from ADP...")
     querystring = {
@@ -113,7 +105,7 @@ def main():
             email.send_email(subject=email_subject, body=email_body)
 
         finally:
-            time.sleep(WAIT_TIME)
+            time.sleep(wait_time)
 
 
 if __name__ == "__main__":

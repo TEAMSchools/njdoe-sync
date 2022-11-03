@@ -5,10 +5,7 @@ import pathlib
 
 import njdoe
 import requests
-from dotenv import load_dotenv
 from google.cloud import storage
-
-load_dotenv()
 
 DAYFORCE_SUBDOMAIN = os.getenv("DAYFORCE_SUMDOMAIN")
 DAYFORCE_USERNAME = os.getenv("DAYFORCE_USERNAME")
@@ -26,7 +23,7 @@ def main():
 
     gcs_client = storage.Client()
     gcs_bucket = gcs_client.bucket(GCS_BUCKET_NAME)
-    
+
     ## Dayforce query
     print("Loading Dayforce data...")
     dayforce_base_url = (
@@ -79,7 +76,9 @@ def main():
                     with open(cc_filepath, "w+") as f:
                         json.dump(cc, f)
 
-                    destination_blob_name = "njdoe/" + "/".join(data_filename.parts[-2:])
+                    destination_blob_name = "njdoe/" + "/".join(
+                        data_filename.parts[-2:]
+                    )
                     blob = gcs_bucket.blob(destination_blob_name)
                     blob.upload_from_filename(data_filename)
                     print(f"\tUploaded to {destination_blob_name}!\n")
