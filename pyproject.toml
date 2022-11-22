@@ -7,12 +7,14 @@ authors = [
 ]
 license-expression = "MIT"
 dependencies = [
-  "njdoe>=0.1.0",
-  "google-cloud-storage>=2.2.1",
-  "oauthlib>=3.2.0",
-  "requests-oauthlib>=1.3.1",
+    "njdoe>=0.1.0",
+    "google-cloud-storage>=2.2.1",
+    "oauthlib>=3.2.0",
+    "requests-oauthlib>=1.3.1",
+    "datarobot @ file:///${PROJECT_ROOT}/../datarobot",
 ]
 requires-python = ">=3.9"
+dynamic = ["dependencies"]
 
 [project.urls]
 Homepage = ""
@@ -29,5 +31,5 @@ build-backend = "pdm.pep517.api"
 
 [tool.pdm.scripts]
 _.env_file = ".env"
-bg-check = { call = "njdoe_sync.background_checks:main", site_packages = true }
-post_lock = { shell = "pdm export -f requirements > requirements.txt" }
+bg-check = { call = "njdoe_sync.background_checks:main" }
+post_lock = { shell = "pdm export -f requirements -o requirements.txt" }
